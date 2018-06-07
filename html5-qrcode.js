@@ -21,11 +21,13 @@
             console.info('mediaDevices available')
             navigator.mediaDevices.enumerateDevices()
                 .then(function (devices) {
+                    console.log(devices);
                     devices.forEach(function (device) {
                         if (device.kind === 'videoinput') {
                             cameraIds.push(device.deviceId);
                         }
                     });
+                    console.log(cameraIds);
                 })
                 .catch(function (err) {
                     console.error(err.name + ': ' + err.message);
@@ -62,6 +64,7 @@
                 if (typeof cameraIds[currentElem.data('sourceId')] != 'undefined')
                     $.data(currentElem[0], "cameraId", cameraIds[currentElem.data('sourceId')]);
 
+                console.log('sourceId', cameraIds[currentElem.data('sourceId')], currentElem.data('cameraId'), currentElem);
                 var height = currentElem.height();
                 var width = currentElem.width();
 
@@ -116,7 +119,7 @@
                     if (typeof currentElem.data("cameraId") != 'undefined') {
                         config = {
                             video: {
-                                deviceId: { exact: currentElem.data("cameraId") }
+                                deviceId: { exact: currentElem.data("cameraId") },
                             }
                         };
                     }
