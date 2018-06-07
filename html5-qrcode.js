@@ -15,8 +15,10 @@
 
     if (typeof MediaStreamTrack === 'undefined' ||
         typeof MediaStreamTrack.getSources === 'undefined') {
+        console.info('MediaStreamTrack undefined')
         // try for most browsers
         if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+            console.info('mediaDevices available')
             navigator.mediaDevices.enumerateDevices()
                 .then(function (devices) {
                     devices.forEach(function (device) {
@@ -37,6 +39,7 @@
         MediaStreamTrack.getSources(gotSources);
     }
 
+
     jQuery.fn.extend({
         /**
          * jQuery method, 
@@ -53,11 +56,9 @@
                 $.data(currentElem[0], "qrcodeSuccess", qrcodeSuccess);
                 $.data(currentElem[0], "qrcodeError", qrcodeError);
                 $.data(currentElem[0], "videoError", videoError);
-
                 if (typeof camera != 'undefined' && typeof cameraIds[camera] != 'undefined')
                     $.data(currentElem[0], "sourceId", camera);
                 else $.data(currentElem[0], "sourceId", 0);
-
                 if (typeof cameraIds[currentElem.data('sourceId')] != 'undefined')
                     $.data(currentElem[0], "cameraId", cameraIds[currentElem.data('sourceId')]);
 
@@ -72,7 +73,7 @@
                     width = 300;
                 }
 
-                var vidElem = $('<video width="' + width + 'px" height="' + height + 'px"></video>').appendTo(currentElem);
+                var vidElem = $('<video width="' + width + 'px" height="' + height + 'px" playsinline autoplay></video>').appendTo(currentElem);
                 var canvasElem = $('<canvas id="qr-canvas" width="' + (width - 2) + 'px" height="' + (height - 2) + 'px" style="display:none;"></canvas>').appendTo(currentElem);
 
                 var video = vidElem[0];
@@ -115,9 +116,7 @@
                     if (typeof currentElem.data("cameraId") != 'undefined') {
                         config = {
                             video: {
-                                optional: [{
-                                    sourceId: currentElem.data("cameraId")
-                                }]
+                                deviceId: { exact: currentElem.data("cameraId") }
                             }
                         };
                     }
