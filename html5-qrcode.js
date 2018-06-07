@@ -15,15 +15,19 @@
 
     if (typeof MediaStreamTrack === 'undefined' ||
         typeof MediaStreamTrack.getSources === 'undefined') {
+        console.info('MediaStreamTrack undefined')
         // try for most browsers
         if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+            console.info('mediaDevices available')
             navigator.mediaDevices.enumerateDevices()
                 .then(function (devices) {
+                    console.log(devices);
                     devices.forEach(function (device) {
                         if (device.kind === 'videoinput') {
                             cameraIds.push(device.deviceId);
                         }
                     });
+                    console.log(cameraIds);
                 })
                 .catch(function (err) {
                     console.error(err.name + ': ' + err.message);
@@ -36,6 +40,7 @@
         // https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack
         MediaStreamTrack.getSources(gotSources);
     }
+
 
     jQuery.fn.extend({
         /**
@@ -53,14 +58,14 @@
                 $.data(currentElem[0], "qrcodeSuccess", qrcodeSuccess);
                 $.data(currentElem[0], "qrcodeError", qrcodeError);
                 $.data(currentElem[0], "videoError", videoError);
-
+                // console.log('camera (' + camera + ') undefined?', cameraIds[camera], typeof camera != 'undefined', typeof cameraIds[camera] != 'undefined');
                 if (typeof camera != 'undefined' && typeof cameraIds[camera] != 'undefined')
                     $.data(currentElem[0], "sourceId", camera);
                 else $.data(currentElem[0], "sourceId", 0);
-
                 if (typeof cameraIds[currentElem.data('sourceId')] != 'undefined')
                     $.data(currentElem[0], "cameraId", cameraIds[currentElem.data('sourceId')]);
 
+                console.log('sourceId', cameraIds[currentElem.data('sourceId')], currentElem.data('cameraId'), currentElem);
                 var height = currentElem.height();
                 var width = currentElem.width();
 
@@ -72,7 +77,7 @@
                     width = 300;
                 }
 
-                var vidElem = $('<video width="' + width + 'px" height="' + height + 'px"></video>').appendTo(currentElem);
+                var vidElem = $('<video width="' + width + 'px" height="' + height + 'px" playsinline autoplay></video>').appendTo(currentElem);
                 var canvasElem = $('<canvas id="qr-canvas" width="' + (width - 2) + 'px" height="' + (height - 2) + 'px" style="display:none;"></canvas>').appendTo(currentElem);
 
                 var video = vidElem[0];
@@ -115,6 +120,7 @@
                     if (typeof currentElem.data("cameraId") != 'undefined') {
                         config = {
                             video: {
+                                deviceId: { exact: currentElem.data("cameraId") },
                                 optional: [{
                                     sourceId: currentElem.data("cameraId")
                                 }]
